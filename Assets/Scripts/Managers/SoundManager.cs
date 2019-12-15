@@ -12,22 +12,106 @@ public class SoundManager : MonoBehaviour
     [Range(0, 1)]
     public float fxVolume = 1.0f;
 
-    public AudioClip clearRowSound;
-    public AudioClip moveSound;
-    public AudioClip dropSound;
-    public AudioClip gameOverSound;
-    public AudioClip errorSound;
-    public AudioClip backgroudMusic;
+    public SoundDescriptor[] sounds;
+
+    public AudioClip[] backgroudMusicClips;
+
+    public AudioSource musicSource;
+
+
+    public SoundToggledEvent fxToggled = new SoundToggledEvent();
+    public SoundToggledEvent musicToggled = new SoundToggledEvent();
 
     // Start is called before the first frame update
     void Start()
     {
+        PlayBackgroundMusic(GetRandomClip(backgroudMusicClips));
 
+        fxToggled.Invoke(fxEnabled);
+        musicToggled.Invoke(musicEnabled);
     }
 
     // Update is called once per frame
     void Update()
     {
+    }
 
+    private AudioClip GetRandomClip(AudioClip[] clips)
+    {
+        return clips[Random.Range(0, clips.Length)];
+    }
+
+    public void PlayBackgroundMusic(AudioClip musicClip)
+    {
+        if (!musicEnabled || !musicClip || !musicSource)
+        {
+            return;
+        }
+
+        musicSource.Stop();
+
+        musicSource.clip = musicClip;
+        musicSource.volume = musicVolume;
+        musicSource.loop = true;
+
+        musicSource.Play();
+    }
+
+
+
+    private void UpdateMusic()
+    {
+        if (musicSource.isPlaying != musicEnabled)
+        {
+            if (musicEnabled)
+            {
+                PlayBackgroundMusic(GetRandomClip(backgroudMusicClips));
+            }
+            else
+            {
+                musicSource.Stop();
+            }
+        }
+    }
+
+    private SoundDescriptor GetSound(string soundName)
+    {
+        foreach (SoundDescriptor sound in sounds)
+        {
+            if (sound.name == soundName)
+            {
+                return sound;
+            }
+        }
+
+        return null;
+    }
+
+    public void PlaySound(string soundName)
+    {
+        SoundDescriptor soundDescriptor = GetSound(soundName);
+        if (soundDescriptor == null)
+        {
+            return;
+        }
+
+        if (fxEnabled && soundDescriptor.sound)
+        {
+            AudioSource.PlayClipAtPoint(soundDescriptor.sound, Camera.main.transform.position, Mathf.Clamp(fxVolume * soundDescriptor.soundMultiplier, 0.05f, 1f));
+        }
+    }
+
+    public void ToggleMusic()
+    {
+        musicEnabled = !musicEnabled;
+        UpdateMusic();
+
+        musicToggled.Invoke(musicEnabled);
+    }
+
+    public void ToggleFX()
+    {
+        fxEnabled = !fxEnabled;
+        fxToggled.Invoke(fxEnabled);
     }
 }

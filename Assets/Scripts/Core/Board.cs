@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Board : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class Board : MonoBehaviour
     public int height = 30;
     public int width = 10;
     public int header = 8;
+
+    public RowClearedEvent rowsClearedEvent = new RowClearedEvent();
 
     Transform[,] grid;
 
@@ -60,6 +63,9 @@ public class Board : MonoBehaviour
             Vector2Int position = Vector2Int.RoundToInt(child.position);
             grid[position.x, position.y] = child;
         }
+
+        shape.transform.DetachChildren();
+        Destroy(shape.gameObject);
     }
 
     private bool IsWithinBoard(int x, int y)
@@ -118,16 +124,8 @@ public class Board : MonoBehaviour
     {
         for (int x = 0; x < width; x++)
         {
-            Transform parent = null;
-            parent = grid[x, y].parent;
-
             Destroy(grid[x, y].gameObject);
             grid[x, y] = null;
-
-            if (parent.childCount == 0)
-            {
-                Destroy(parent);
-            }
         }
 
     }
@@ -160,18 +158,28 @@ public class Board : MonoBehaviour
 
     public void ClearAllRows()
     {
+        int clearedRowsCount = 0;
+        int yPosition = 0;
+
         int y = 0;
         while (y < height)
         {
             if (IsComplete(y))
             {
+                yPosition = y;
                 ClearRow(y);
                 ShiftRowsDown(y + 1);
+                clearedRowsCount++;
             }
             else
             {
                 y++;
             }
+        }
+
+        if (clearedRowsCount > 0)
+        {
+            rowsClearedEvent.Invoke(clearedRowsCount, yPosition);
         }
     }
 
