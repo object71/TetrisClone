@@ -115,6 +115,8 @@ public class GameController : MonoBehaviour
 
         dropIntervalCurrent = dropIntervalInitial;
 
+        Time.timeScale = 1f;
+
         rotationToggled.Invoke(isClockwiseRotation);
     }
 
@@ -308,7 +310,6 @@ public class GameController : MonoBehaviour
             gameOverPanel.SetActive(false);
         }
 
-        Time.timeScale = 1f;
     }
 
     public void ToggleRotation()

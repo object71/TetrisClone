@@ -5,44 +5,57 @@ using UnityEngine;
 public class Ghost : MonoBehaviour
 {
     private Shape ghostShape = null;
+    private bool ghostEnabled = true;
 
     public Color color = new Color(1f, 1f, 1f, 0.2f);
 
     public void Reset()
     {
-        Destroy(ghostShape.gameObject);
+        if (ghostShape)
+        {
+            Destroy(ghostShape.gameObject);
+        }
     }
 
     public void DrawGhost(Shape originalShape, Board gameBoard)
     {
-        if (!ghostShape)
+        if (ghostEnabled)
         {
-            ghostShape = Instantiate(originalShape, originalShape.transform.position, originalShape.transform.rotation) as Shape;
-            ghostShape.gameObject.name = "GhostShape";
-
-            SpriteRenderer[] allRenderers = ghostShape.GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer renderer in allRenderers)
+            if (!ghostShape)
             {
-                renderer.color = color;
+                ghostShape = Instantiate(originalShape, originalShape.transform.position, originalShape.transform.rotation) as Shape;
+                ghostShape.gameObject.name = "GhostShape";
+
+                SpriteRenderer[] allRenderers = ghostShape.GetComponentsInChildren<SpriteRenderer>();
+                foreach (SpriteRenderer renderer in allRenderers)
+                {
+                    renderer.color = color;
+                }
+            }
+            else
+            {
+                ghostShape.transform.position = originalShape.transform.position;
+                ghostShape.transform.rotation = originalShape.transform.rotation;
+            }
+
+            bool hitBottom = false;
+
+            while (!hitBottom)
+            {
+                ghostShape.MoveDown();
+                if (!gameBoard.IsValidPosition(ghostShape))
+                {
+                    ghostShape.MoveUp();
+                    hitBottom = true;
+                }
             }
         }
-        else
-        {
-            ghostShape.transform.position = originalShape.transform.position;
-            ghostShape.transform.rotation = originalShape.transform.rotation;
-        }
+    }
 
-        bool hitBottom = false;
-
-        while (!hitBottom)
-        {
-            ghostShape.MoveDown();
-            if (!gameBoard.IsValidPosition(ghostShape))
-            {
-                ghostShape.MoveUp();
-                hitBottom = true;
-            }
-        }
+    public void ToggleGhost()
+    {
+        ghostEnabled = !ghostEnabled;
+        Reset();
     }
 
     // Start is called before the first frame update
