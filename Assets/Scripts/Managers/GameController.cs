@@ -6,6 +6,14 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    public RotationToggledEvent rotationToggled = new RotationToggledEvent();
+
+    public GameObject gameOverPanel;
+    public GameObject pausePanel;
+    public GameObject[] overlays;
+
+    public bool isPaused = false;
+
     private Board gameBoard;
     private Spawner spawner;
     private SoundManager soundManager;
@@ -35,13 +43,6 @@ public class GameController : MonoBehaviour
 
     private bool isClockwiseRotation = true;
 
-    public RotationToggledEvent rotationToggled = new RotationToggledEvent();
-
-    public GameObject gameOverPanel;
-    public GameObject pausePanel;
-    public GameObject[] overlays;
-
-    public bool isPaused = false;
 
     // Start is called before the first frame update
     void Start()
@@ -120,16 +121,6 @@ public class GameController : MonoBehaviour
         rotationToggled.Invoke(isClockwiseRotation);
     }
 
-    private void OnLevelUp(int level)
-    {
-        if (soundManager)
-        {
-            soundManager.PlaySound("LevelUpVocal");
-        }
-
-        dropIntervalCurrent = Mathf.Clamp(dropIntervalInitial - (((float)level - 1) * 0.1f), 0.05f, 1f);
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -146,6 +137,80 @@ public class GameController : MonoBehaviour
         }
 
     }
+
+    void LateUpdate()
+    {
+        if (ghost)
+        {
+            ghost.DrawGhost(activeShape, gameBoard);
+        }
+    }
+    public void OnRowsCleared(int n, int startY)
+    {
+        soundManager.PlaySound("ClearRow");
+        soundManager.PlaySound($"Cleared{n}Vocal");
+
+        for (int y = startY; y < startY + n; y++)
+        {
+            for (int x = 0; x < gameBoard.width; x++)
+            {
+                fxManager.PlayGlowFx(x, y);
+            }
+        }
+
+        scoreManager.OnLinesCleared(n);
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        if (gameOverPanel)
+        {
+            gameOverPanel.SetActive(false);
+        }
+
+        if (pausePanel)
+        {
+            gameOverPanel.SetActive(false);
+        }
+
+    }
+
+    public void ToggleRotation()
+    {
+        isClockwiseRotation = !isClockwiseRotation;
+        rotationToggled.Invoke(isClockwiseRotation);
+    }
+
+    public void TogglePause()
+    {
+        if (gameIsOver)
+        {
+            return;
+        }
+
+        isPaused = !isPaused;
+
+        if (pausePanel)
+        {
+            pausePanel.SetActive(isPaused);
+            soundManager.musicSource.volume = isPaused ? soundManager.musicVolume * 0.25f : soundManager.musicVolume;
+        }
+
+        Time.timeScale = isPaused ? 0 : 1;
+    }
+
+    private void OnLevelUp(int level)
+    {
+        if (soundManager)
+        {
+            soundManager.PlaySound("LevelUpVocal");
+        }
+
+        dropIntervalCurrent = Mathf.Clamp(dropIntervalInitial - (((float)level - 1) * 0.1f), 0.05f, 1f);
+    }
+
 
     private void MoveActiveShapeDown()
     {
@@ -270,69 +335,5 @@ public class GameController : MonoBehaviour
         {
             TogglePause();
         }
-    }
-
-    public void OnRowsCleared(int n, int startY)
-    {
-        soundManager.PlaySound("ClearRow");
-        soundManager.PlaySound($"Cleared{n}Vocal");
-
-        for (int y = startY; y < startY + n; y++)
-        {
-            for (int x = 0; x < gameBoard.width; x++)
-            {
-                fxManager.PlayGlowFx(x, y);
-            }
-        }
-
-        scoreManager.OnLinesCleared(n);
-    }
-
-    void LateUpdate()
-    {
-        if (ghost)
-        {
-            ghost.DrawGhost(activeShape, gameBoard);
-        }
-    }
-
-    public void Restart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
-        if (gameOverPanel)
-        {
-            gameOverPanel.SetActive(false);
-        }
-
-        if (pausePanel)
-        {
-            gameOverPanel.SetActive(false);
-        }
-
-    }
-
-    public void ToggleRotation()
-    {
-        isClockwiseRotation = !isClockwiseRotation;
-        rotationToggled.Invoke(isClockwiseRotation);
-    }
-
-    public void TogglePause()
-    {
-        if (gameIsOver)
-        {
-            return;
-        }
-
-        isPaused = !isPaused;
-
-        if (pausePanel)
-        {
-            pausePanel.SetActive(isPaused);
-            soundManager.musicSource.volume = isPaused ? soundManager.musicVolume * 0.25f : soundManager.musicVolume;
-        }
-
-        Time.timeScale = isPaused ? 0 : 1;
     }
 }

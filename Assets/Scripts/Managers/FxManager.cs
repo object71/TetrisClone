@@ -15,25 +15,6 @@ public class FxManager : MonoBehaviour
 
     }
 
-    public void PlaySpawnFx()
-    {
-        if (SpawnFx)
-        {
-            SpawnFx.Play();
-        }
-    }
-
-    public void PlayGlowFx(int x, int y)
-    {
-        if (GlowFx)
-        {
-            ParticleSystem glowFx = Instantiate(GlowFx, new Vector3(x, y, -1), Quaternion.identity);
-            glowFx.Play();
-
-            particles.Add(glowFx);
-        }
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -58,4 +39,24 @@ public class FxManager : MonoBehaviour
             }
         }
     }
+
+    public void PlaySpawnFx()
+    {
+        if (SpawnFx)
+        {
+            SpawnFx.Play();
+        }
+    }
+
+    public void PlayGlowFx(int x, int y)
+    {
+        if (GlowFx)
+        {
+            ParticleSystem glowFx = Instantiate(GlowFx, new Vector3(x, y, -1), Quaternion.identity);
+            glowFx.Play();
+
+            particles.Add(glowFx);
+        }
+    }
+
 }

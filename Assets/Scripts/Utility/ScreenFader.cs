@@ -33,6 +33,12 @@ public class ScreenFader : MonoBehaviour
         StartCoroutine("FadeRoutine");
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
     private IEnumerator FadeRoutine()
     {
         yield return new WaitForSeconds(delay);
@@ -45,11 +51,5 @@ public class ScreenFader : MonoBehaviour
             Color currentColor = new Color(originalColor.r, originalColor.g, originalColor.b, currentAlpha);
             graphic.color = currentColor;
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

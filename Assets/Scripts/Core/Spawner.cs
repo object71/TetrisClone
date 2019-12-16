@@ -7,19 +7,16 @@ public class Spawner : MonoBehaviour
 
     public Shape[] allShapes;
 
-    Shape GetRandomShape()
+    // Start is called before the first frame update
+    void Start()
     {
-        int i = Random.Range(0, allShapes.Length);
+        transform.position = Vector3Int.RoundToInt(transform.position);
+    }
 
-        if (allShapes[i])
-        {
-            return allShapes[i];
-        }
-        else
-        {
-            Debug.LogWarning("Warning! Invalid shape in spawner.");
-            return null;
-        }
+    // Update is called once per frame
+    void Update()
+    {
+
     }
 
     public Shape SpawnShape()
@@ -39,15 +36,18 @@ public class Spawner : MonoBehaviour
         return shape;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private Shape GetRandomShape()
     {
-        transform.position = Vector3Int.RoundToInt(transform.position);
-    }
+        int i = Random.Range(0, allShapes.Length);
 
-    // Update is called once per frame
-    void Update()
-    {
-
+        if (allShapes[i])
+        {
+            return allShapes[i];
+        }
+        else
+        {
+            Debug.LogWarning("Warning! Invalid shape in spawner.");
+            return null;
+        }
     }
 }

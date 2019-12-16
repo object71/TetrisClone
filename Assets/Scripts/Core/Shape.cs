@@ -6,9 +6,16 @@ public class Shape : MonoBehaviour
 {
     public bool canRotate = true;
 
-    private void Move(Vector3 moveDirection)
+
+    // Start is called before the first frame update
+    void Start()
     {
-        transform.position += moveDirection;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
     }
 
     public void MoveLeft()
@@ -59,15 +66,9 @@ public class Shape : MonoBehaviour
         }
     }
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Move(Vector3 moveDirection)
     {
+        transform.position += moveDirection;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }

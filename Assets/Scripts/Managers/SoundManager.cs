@@ -59,6 +59,35 @@ public class SoundManager : MonoBehaviour
 
 
 
+    public void PlaySound(string soundName)
+    {
+        SoundDescriptor soundDescriptor = GetSound(soundName);
+        if (soundDescriptor == null)
+        {
+            return;
+        }
+
+        if (fxEnabled && soundDescriptor.sound)
+        {
+            AudioSource.PlayClipAtPoint(soundDescriptor.sound, Camera.main.transform.position, Mathf.Clamp(fxVolume * soundDescriptor.soundMultiplier, 0.05f, 1f));
+        }
+    }
+
+    public void ToggleMusic()
+    {
+        musicEnabled = !musicEnabled;
+        UpdateMusic();
+
+        musicToggled.Invoke(musicEnabled);
+    }
+
+    public void ToggleFX()
+    {
+        fxEnabled = !fxEnabled;
+        fxToggled.Invoke(fxEnabled);
+    }
+
+
     private void UpdateMusic()
     {
         if (musicSource.isPlaying != musicEnabled)
@@ -87,31 +116,4 @@ public class SoundManager : MonoBehaviour
         return null;
     }
 
-    public void PlaySound(string soundName)
-    {
-        SoundDescriptor soundDescriptor = GetSound(soundName);
-        if (soundDescriptor == null)
-        {
-            return;
-        }
-
-        if (fxEnabled && soundDescriptor.sound)
-        {
-            AudioSource.PlayClipAtPoint(soundDescriptor.sound, Camera.main.transform.position, Mathf.Clamp(fxVolume * soundDescriptor.soundMultiplier, 0.05f, 1f));
-        }
-    }
-
-    public void ToggleMusic()
-    {
-        musicEnabled = !musicEnabled;
-        UpdateMusic();
-
-        musicToggled.Invoke(musicEnabled);
-    }
-
-    public void ToggleFX()
-    {
-        fxEnabled = !fxEnabled;
-        fxToggled.Invoke(fxEnabled);
-    }
 }

@@ -31,6 +31,34 @@ public class Board : MonoBehaviour
 
     }
 
+
+    public void ClearAllRows()
+    {
+        int clearedRowsCount = 0;
+        int yPosition = 0;
+
+        int y = 0;
+        while (y < height)
+        {
+            if (IsComplete(y))
+            {
+                yPosition = y;
+                ClearRow(y);
+                ShiftRowsDown(y + 1);
+                clearedRowsCount++;
+            }
+            else
+            {
+                y++;
+            }
+        }
+
+        if (clearedRowsCount > 0)
+        {
+            rowsClearedEvent.Invoke(clearedRowsCount, yPosition);
+        }
+    }
+
     public bool IsValidPosition(Shape shape)
     {
         foreach (Transform child in shape.transform)
@@ -49,6 +77,19 @@ public class Board : MonoBehaviour
         }
 
         return true;
+    }
+
+    public bool IsOverLimit(Shape shape)
+    {
+        foreach (Transform child in shape.transform)
+        {
+            if (child.transform.position.y >= (height - header - 1))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void StoreShapeInGrid(Shape shape)
@@ -85,7 +126,7 @@ public class Board : MonoBehaviour
         return (grid[x, y] != null && grid[x, y].parent != shape.transform);
     }
 
-    void DrawEmptyCells()
+    private void DrawEmptyCells()
     {
         if (emptySprite)
         {
@@ -107,7 +148,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    bool IsComplete(int y)
+    private bool IsComplete(int y)
     {
         for (int x = 0; x < width; x++)
         {
@@ -120,7 +161,7 @@ public class Board : MonoBehaviour
         return true;
     }
 
-    void ClearRow(int y)
+    private void ClearRow(int y)
     {
         for (int x = 0; x < width; x++)
         {
@@ -156,43 +197,4 @@ public class Board : MonoBehaviour
         }
     }
 
-    public void ClearAllRows()
-    {
-        int clearedRowsCount = 0;
-        int yPosition = 0;
-
-        int y = 0;
-        while (y < height)
-        {
-            if (IsComplete(y))
-            {
-                yPosition = y;
-                ClearRow(y);
-                ShiftRowsDown(y + 1);
-                clearedRowsCount++;
-            }
-            else
-            {
-                y++;
-            }
-        }
-
-        if (clearedRowsCount > 0)
-        {
-            rowsClearedEvent.Invoke(clearedRowsCount, yPosition);
-        }
-    }
-
-    public bool IsOverLimit(Shape shape)
-    {
-        foreach (Transform child in shape.transform)
-        {
-            if (child.transform.position.y >= (height - header - 1))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

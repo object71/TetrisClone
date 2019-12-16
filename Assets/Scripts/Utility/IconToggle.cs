@@ -11,7 +11,7 @@ public class IconToggle : MonoBehaviour
 
     public bool defaultIconState = true;
 
-    Image image;
+    private Image image;
 
     // Start is called before the first frame update
     void Start()

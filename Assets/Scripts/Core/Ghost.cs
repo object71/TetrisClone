@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class Ghost : MonoBehaviour
 {
+    public Color color = new Color(1f, 1f, 1f, 0.2f);
+
     private Shape ghostShape = null;
     private bool ghostEnabled = true;
 
-    public Color color = new Color(1f, 1f, 1f, 0.2f);
+    // Start is called before the first frame update
+    void Start()
+    {
 
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
     public void Reset()
     {
         if (ghostShape)
@@ -56,17 +67,5 @@ public class Ghost : MonoBehaviour
     {
         ghostEnabled = !ghostEnabled;
         Reset();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
